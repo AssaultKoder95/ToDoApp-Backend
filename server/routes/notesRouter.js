@@ -7,12 +7,12 @@ const CONFIG = require('../../config');
 
 notesRouter.use(bodyParser.json());
 
-notesRouter.use(() => {
-  res.setHeader('Content-Type', 'application/json');
-});
-
 notesRouter.route('/').get((req, res, next) => {
-  NotesModel.find({}).then((notes) => {
+  NotesModel.find({}, {
+    _id: 0,
+    __v: 0,
+    updatedAt: 0
+  }).then((notes) => {
     if (notes.length) {
       res.statusCode = CONFIG.RESPONSE_CODE.SUCCESS;
       res.json(setResponse(CONFIG.RESPONSE_CODE.SUCCESS, true, MSG.SUCCESS, notes));
@@ -26,8 +26,14 @@ notesRouter.route('/').get((req, res, next) => {
   });
 }).post((req, res, next) => {
   NotesModel.create(req.body).then((notes) => {
+    let responseObject = {};
+    let keys = Object.keys(CONFIG.RESPONSE_SUCCESS_OBJECT);
+    keys.map((key) =>{
+      if(notes[key])
+        responseObject[key] = notes[key];
+    })
     res.statusCode = CONFIG.RESPONSE_CODE.CREATED;
-    res.json(setResponse(CONFIG.RESPONSE_CODE.CREATED, true, MSG.SUCCESS, notes));
+    res.json(setResponse(CONFIG.RESPONSE_CODE.CREATED, true, MSG.SUCCESS, responseObject));
   }, (err) => {
     console.log(err);
     res.json(setResponse(CONFIG.RESPONSE_CODE.UNABLE_TO_PERFORM, false, MSG.OPERATION_FAILED, err));
