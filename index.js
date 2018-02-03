@@ -39,7 +39,7 @@ app.use(function(req, res, next) {
   // to the API (e.g. in case you use sessions)
   res.setHeader('Access-Control-Allow-Credentials', false);
 
-  // Add the default content type to application 
+  // Add the default content type to application
   res.setHeader('Content-Type', 'application/json');
 
   // Pass to next layer of middleware

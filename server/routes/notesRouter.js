@@ -9,7 +9,6 @@ notesRouter.use(bodyParser.json());
 
 notesRouter.route('/').get((req, res, next) => {
   NotesModel.find({}, {
-    _id: 0,
     __v: 0,
     updatedAt: 0
   }).then((notes) => {
@@ -50,5 +49,24 @@ notesRouter.route('/').get((req, res, next) => {
     res.json(setResponse(CONFIG.RESPONSE_CODE.UNABLE_TO_PERFORM, false, MSG.GENERIC_ERROR));
   });
 })
+
+notesRouter.route('/:noteId').get((req, res, next) => {
+  console.log(req);
+  NotesModel.findOne({"_id":req.noteId}, {
+    __v: 0,
+    updatedAt: 0
+  }).then((notes) => {
+    if (notes.length) {
+      res.statusCode = CONFIG.RESPONSE_CODE.SUCCESS;
+      res.json(setResponse(CONFIG.RESPONSE_CODE.SUCCESS, true, MSG.SUCCESS, notes));
+    } else {
+      res.statusCode = CONFIG.RESPONSE_CODE.SUCCESS;
+      res.json(setResponse(CONFIG.RESPONSE_CODE.SUCCESS, true, MSG.NO_DATA, notes));
+    }
+  }, (err) => {
+    console.log(err);
+    res.json(setResponse(CONFIG.RESPONSE_CODE.UNABLE_TO_PERFORM, false, MSG.GENERIC_ERROR));
+  });
+});
 
 module.exports = notesRouter;
